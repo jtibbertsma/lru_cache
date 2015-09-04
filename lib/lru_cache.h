@@ -1,3 +1,10 @@
+/* lru_cache.h
+ *
+ * Misc notes:
+ *  * When items are removed from the cache, free is called on both the key and
+ *    the value. Same goes for when the destructor is called on the cache.
+ */
+
 #ifndef JT_LRU_CACHE
 #define JT_LRU_CACHE
 
@@ -57,7 +64,7 @@ lru_cache *lrucache_new(hashfunc, eqfunc, uint32_t, defaultfunc);
  */
  void *lrucache_get(void *);
 
- /* lrucache_get_no_default
+/* lrucache_get_no_default
  * 
  * Same lrucache_get, but don't attempt to build a default value. This is good
  * for testing if a given key is in the cache.
@@ -67,5 +74,15 @@ lru_cache *lrucache_new(hashfunc, eqfunc, uint32_t, defaultfunc);
  *     The key to search for in the hash table.
  */
  void *lrucache_get_no_default(void *);
+
+/* lrucache_remove
+ *
+ * Search for a key in the cache, and remove it if it's found. Returns true if
+ * an item got deleted
+ *
+ * Arguments:
+ *   key:
+ *     The key to search for in the hash table.
+ */
 
 #endif
