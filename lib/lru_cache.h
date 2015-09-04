@@ -44,4 +44,28 @@ typedef void * (*defaultfunc)(void *);
  */
 lru_cache *lrucache_new(hashfunc, eqfunc, uint32_t, defaultfunc);
 
+/* lrucache_get
+ * 
+ * Given a key, return the corresponding value from the cache. If a default
+ * func was provided and the key doesn't exist, use the defualt func to
+ * build a new value and insert that into the cache before returning it. If
+ * an item is found, it is considered the most recently used item.
+ *
+ * Arguments:
+ *   key:
+ *     The key to search for in the hash table.
+ */
+ void *lrucache_get(void *);
+
+ /* lrucache_get_no_default
+ * 
+ * Same lrucache_get, but don't attempt to build a default value. This is good
+ * for testing if a given key is in the cache.
+ *
+ * Arguments:
+ *   key:
+ *     The key to search for in the hash table.
+ */
+ void *lrucache_get_no_default(void *);
+
 #endif
