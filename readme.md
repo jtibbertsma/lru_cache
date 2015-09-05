@@ -16,5 +16,4 @@ The cache is implemented using a hash table and circular doubly linked list.
 
 ## Usage
 
-The keys in the table are void pointers. It's up to the user to provide a hash function. More detailed usage information is
-in the header file.
+The keys in the table are void pointers. The user can provide a hash function to hash the keys, so the keys can be anything. If no hash function is given, then a reasonable default is used.
