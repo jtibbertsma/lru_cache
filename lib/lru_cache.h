@@ -17,16 +17,16 @@ typedef struct _lru_cache lru_cache;
 typedef uint32_t (*hashfunc)(void *);
 
 /* Definition for user defined equality function */
-typedef int      (*eqfunc)(void *, void *);
+typedef int    (*eqfunc)(void *, void *);
 
 /* Definition for user defined default value calculation function */
-typedef void *   (*defaultfunc)(void *);
+typedef void * (*defaultfunc)(void *);
 
 /* Definition of a user defined memory allocation function */
-typedef void *   (*allocfunc)(void *);
+typedef void * (*allocfunc)(void *);
 
 /* Definition of a user defined memory deallocation function */
-typedef void     (*freefunc)(void *);
+typedef void   (*freefunc)(void *);
 
 /* lrucache_new
  *
