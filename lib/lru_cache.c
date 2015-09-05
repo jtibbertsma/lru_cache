@@ -78,7 +78,7 @@ lrucache_new(
   }
 
   /* allocate main struct */
-  lru_cache *self = (lru_cache *) allocate(sizeof lru_cache);
+  lru_cache *self = (lru_cache *)allocate(sizeof lru_cache);
   if (self == NULL) {
     return NULL;
   }
@@ -88,12 +88,12 @@ lrucache_new(
   self->allocate = allocate;
   self->hash = hash;
   if (hash == NULL) {
-    self->hash = (hashfunc) string_hash;
+    self->hash = (hashfunc)string_hash;
   }
   self->equality = equality;
   if (equality == NULL) {
     if (hash == NULL) {
-      self->equality = (eqfunc) string_equality;
+      self->equality = (eqfunc)string_equality;
     } else {
       self->equality = pointer_equality;
     }
@@ -110,9 +110,10 @@ lrucache_new(
   self->capa = DEFAULT_CAPA;
   self->dcount = 0;
 
-  /* create circular linked list root to point at itself */
-  self->root = (struct node *) self->allocate(sizeof struct node);
+  /* create circular linked list root; have it point at itself */
+  self->root = (struct node *)self->allocate(sizeof struct node);
   if (self->root == NULL) {
+    self->deallocate(self);
     return NULL;
   }
   memset(self->root, 0, sizeof struct node);
@@ -120,11 +121,53 @@ lrucache_new(
   self->root->next = self->root;
 
   /* create hash table */
-  self->table = (struct node *) self->allocate((sizeof struct node) * self->capa);
-  if (self->table) {
+  self->table = (struct node *)self->allocate((sizeof struct node) * self->capa);
+  if (self->table == NULL) {
+    self->deallocate(self->root);
+    self->deallocate(self);
     return NULL;
   }
   memset(self->table, 0, (sizeof struct node) * self->capa);
 
   return self;
+}
+
+
+
+
+void *
+lrucache_get_no_default(lru_cache *self, void *key)
+{
+  struct node *node;
+  int found;
+
+  if ((found = fetch_node(self, key, &node)) < 0) {
+    return NULL;
+  }
+
+  if (found) {
+    move_node_to_front(self->root, node);
+    return node->value;
+  } else {
+    return NULL;
+  }
+}
+
+void *
+lrucache_get(lru_cache *self, void *key)
+{
+  struct node *node;
+  int found;
+
+  if ((found = fetch_node(self, key, &node)) < 0) {
+    return NULL;
+  }
+
+  if (found) {
+    move_node_to_front(self->root, node);
+    return node->value;
+  } else {
+    /* Try building a default value and inserting that into the cache */
+    
+  }
 }

@@ -3,6 +3,9 @@
  * Misc notes:
  *  * When items are removed from the cache, free is called on both the key and
  *    the value. Same goes for when the destructor is called on the cache.
+ *
+ *  * User defined functions other than hash can return error values; -1 for
+ *    ints and NULL for pointers.
  */
 
 #ifndef JT_LRU_CACHE
