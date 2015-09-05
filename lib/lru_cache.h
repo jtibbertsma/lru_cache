@@ -48,8 +48,8 @@ typedef void   (*freefunc)(void *);
  *     hash function.
  *
  *   equality (optional):
- *     A pointer to a function that compares two values and returns a
- *     nonzero int if the two values are to be considered equal. This will be
+ *     A pointer to a function that compares two values and returns true
+ *     if the two values are to be considered equal. This will be
  *     called on a pair of keys that have the same hash value. If this is NULL,
  *     and the hash argument is also NULL, then we'll use a default string
  *     comparison function. If this is NULL and hash is non-NULL, we'll use

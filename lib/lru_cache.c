@@ -132,8 +132,45 @@ lrucache_new(
   return self;
 }
 
+/* The hash table is implemented as a contiguous array of nodes. Collisions are
+handled by jumping to another node based on the formula
+idx = (5 * idx) % capa. This probing method will eventually visit every node
+in the array if capa is a power of 2, which it will be. This is based on 
+the implementation of the Python dictionary. */
+static int
+fetch_node(lru_cache *self, void *key, struct node **node_ptr)
+{
+  uint32_t idx;
+  int found;
+  struct node *node, *table = self->table;
 
+  idx = self->hash(key) & (self->capa - 1);
+  while (table[idx].key != NULL) {
+    if (table[idx].key && (found = self->equality(table[idx].key, key)) < 0) {
+      return -1;
+    }
+    if (found) {
+      *node_ptr = &table[idx];
+      return 1;
+    }
 
+    idx = ((idx << 4) + idx) & (self->capa - 1);
+  }
+
+  *node_ptr = &table[idx];
+  return 0;
+}
+
+static void
+move_node_to_front(struct node *root, struct node *node)
+{
+  node->prev->next = node->next;
+  node->next->prev = node->prev;
+  node->next = root->next;
+  node->prev = root;
+  root->next->prev = node;
+  root->next = node;
+}
 
 void *
 lrucache_get_no_default(lru_cache *self, void *key)
@@ -168,6 +205,16 @@ lrucache_get(lru_cache *self, void *key)
     return node->value;
   } else {
     /* Try building a default value and inserting that into the cache */
-    
+    if (self->calc_default) {
+      void *value = self->calc_default(key);
+      if (value == NULL) {
+        return NULL;
+      }
+      node->key = key;
+      node->value = value;
+      insert_node_at_front(self, node);
+
+      return value;
+    }
   }
 }
